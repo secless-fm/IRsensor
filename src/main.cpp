@@ -10,6 +10,8 @@ static int irValue[11];
 static bool ballFound = false;
 static float theta = 0.0;
 
+const int IR_pin = 0;
+
 static float deg_radian(int index)
 {
   static const int Deg[IR_COUNT]{
@@ -52,6 +54,12 @@ void loop() {
   if (theta < 0.0) theta += 360.0;
 
   float ballAngle = (theta / 360) * 100; // C-styleに送る用
+
+  if(ballFound) {
+    analogWrite(IR_pin, ballAngle); // IR_pinに値を送る。
+  }else{
+      Serial.print("ボールが見つかりません笑");
+  }
 }
 
 /* ==変数・定数・関数一覧==
