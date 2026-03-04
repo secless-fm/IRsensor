@@ -10,6 +10,7 @@ static int irValue[11];
 static bool ballFound = false;
 static float theta = 0.0;
 
+const int DAC_PIN = 0;
 const int IR_pin = 0;
 
 static float deg_radian(int index)
@@ -25,7 +26,7 @@ static float deg_radian(int index)
 void setup() {
   Serial.begin(115200);
 
-
+  pinMode(DAC_PIN, OUTPUT);
 }
 
 void loop() {
