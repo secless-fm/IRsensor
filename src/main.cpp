@@ -6,7 +6,7 @@ static const int IR_LAST_PIN = 10;
 static const int IR_COUNT = 10;
 static const int NOT_BALL_FOUND = 900;
 
-static int irValue[11];
+static int irValue[10];
 static bool ballFound = false;
 static float theta = 0.0;
 
@@ -34,9 +34,6 @@ void loop() {
 
   for (int pin = IR_FIRST_PIN; pin < IR_LAST_PIN; pin ++)
   {
-    if(pin == 5 || pin == 6;){
-      continue;
-    }
     int val = analogRead(pin);
     irValue[pin] = val;
     if (minval > val) {
