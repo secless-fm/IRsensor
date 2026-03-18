@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <math.h>
 
+#include "function.hpp"
+
 static const int IR_FIRST_PIN = 1;
 static const int IR_LAST_PIN = 10;
 static const int IR_COUNT = 10;
@@ -25,6 +27,8 @@ static float deg_radian(int index)
 
 void setup() {
   Serial.begin(115200);
+
+  Serial_start();
 
   pinMode(DAC_PIN, OUTPUT);
 }
