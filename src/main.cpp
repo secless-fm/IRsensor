@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <math.h>
 
-#include "function.hpp"
+#include "option.hpp"
 
 static const int IR_FIRST_PIN = 1;
 static const int IR_LAST_PIN = 10;
@@ -12,8 +12,7 @@ static int irValue[10];
 static bool ballFound = false;
 static float theta = 0.0;
 
-const int DAC_PIN = 0;
-const int IR_pin = 0;
+const int DAC_PIN = A0;
 
 static float deg_radian(int index)
 {
@@ -29,11 +28,20 @@ void setup() {
   Serial.begin(115200);
 
   Serial_start();
-
-  pinMode(DAC_PIN, OUTPUT);
 }
 
 void loop() {
+  for (int pin = IR_FIRST_PIN; pin <= IR_LAST_PIN; pin ++) // センサごとの値チェックプログラム
+  {
+    if(pin == 6 || pin == 7)
+    {
+      continue;
+    }
+    Serial.print(String(" ") + pin + String(" : "));
+    Serial.print(analogRead(pin));
+  }
+  Serial.println();
+  /*
   int minval = 900;
 
   for (int pin = IR_FIRST_PIN; pin < IR_LAST_PIN; pin ++)
@@ -43,6 +51,12 @@ void loop() {
     if (minval > val) {
       minval = val;
     }
+  }
+
+  if (minval > NOT_BALL_FOUND){
+    ballFound = false;
+  }else{
+    ballFound = true;
   }
 
   float vx = 0.0,vy = 0.0;
@@ -63,11 +77,17 @@ void loop() {
 
   float ballAngle = (theta / 360) * 1024; // C-styleに送る用
 
+  Serial.println(theta);
+
   if(ballFound) {
-    analogWrite(IR_pin, ballAngle); // IR_pinに値を送る。
+    analogWrite(DAC_PIN, ballAngle); // DAC_PINに値を送る。
   }else{
-      Serial.print("ボールが見つかりません笑");
+    Serial.println("ボールが見つかりません笑");
   }
+
+  */
+
+  delay(100);
 }
 
 /* ==変数・定数・関数一覧==
