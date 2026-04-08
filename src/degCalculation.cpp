@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "sensorCheck.hpp"
+#include "degCalculation.hpp"
 
 static const int NOT_BALL_FOUND = 900;
 
@@ -12,7 +13,7 @@ float ballAngle;
 static float deg_radian(int index)
 {
     static const double Deg[] = {
-    0.0, 45.0, 90.0, 135.0, 0.0, 0.0, // 6,7番目は無意味
+    0.0, 45.0, 90.0, 135.0, 0.0, 0.0,   // 6,7番目は無意味
     180.0, 225.0, 270.0, 315.0};
     return Deg[index] * M_PI / 180.0;
 }
@@ -36,7 +37,7 @@ void DegCalculation(){
 
     if (minval > NOT_BALL_FOUND)
     {
-    ballFound = false;
+        ballFound = false;
     }
     else
     {
@@ -47,21 +48,21 @@ void DegCalculation(){
 
     for (int pin = IR_FIRST_PIN; pin <= IR_LAST_PIN; pin++)
     {
-    if (pin == 6 || pin == 7)
-    {
-        continue;
-    }
-    float w = 1.0 / (irValue[pin] + 1);
-    float ang = deg_radian(pin);
-    vx += w * cos(ang);
-    vy += w * sin(ang);
+        if (pin == 6 || pin == 7)
+        {
+            continue;
+        }
+        float w = 1.0 / (irValue[pin] + 1);
+        float ang = deg_radian(pin);
+        vx += w * cos(ang);
+        vy += w * sin(ang);
     }
 
     theta = atan2(vy, vx) * 180.0 / M_PI;
     if (theta < 0.0)
     theta += 360.0;
 
-    ballAngle = (theta / 360) * 1024; // C-styleに送る用
+    ballAngle = (theta / 360) * 1024;   // C-styleに送る用
 
     Serial.print(theta);
 }

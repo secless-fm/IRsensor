@@ -27,9 +27,9 @@ void loop()
   DegCalculation();
   #endif
 
-#else
+  #else
 
-#endif
+  #endif
 
   if (ballFound)
   {
