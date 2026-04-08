@@ -2,90 +2,45 @@
 #include <math.h>
 
 #include "option.hpp"
+#include "sensorCheck.hpp"
+#include "degCalculation.hpp"
 
-static const int IR_FIRST_PIN = 1;
-static const int IR_LAST_PIN = 10;
-static const int IR_COUNT = 10;
-static const int NOT_BALL_FOUND = 900;
-
-static int irValue[10];
-static bool ballFound = false;
-static float theta = 0.0;
+#define ValueCheck 0 // 1: センサの値チェック 0: 角度を出す コメントアウト:3つ目の処理（未実装）
 
 const int DAC_PIN = A0;
 
-static float deg_radian(int index)
+
+void setup()
 {
-  static const double Deg[IR_COUNT]{
-    0.0, 45.0, 90.0, 135.0, 0.0, 0.0, // 5,6番目は無意味
-    180.0, 225.0, 270.0, 315.0
-  };
-  return Deg[index] * M_PI / 180.0; 
-}
-
-
-void setup() {
   Serial.begin(115200);
 
   Serial_start();
 }
 
-void loop() {
-  for (int pin = IR_FIRST_PIN; pin <= IR_LAST_PIN; pin ++) // センサごとの値チェックプログラム
+void loop()
+{
+#ifdef ValueCheck
+
+  #if ValueCheck
+  SensorCheck();
+  #else
+  DegCalculation();
+  #endif
+
+#else
+
+#endif
+
+  if (ballFound)
   {
-    if(pin == 6 || pin == 7)
-    {
-      continue;
-    }
-    Serial.print(String(" ") + pin + String(" : "));
-    Serial.print(analogRead(pin));
-  }
-  Serial.println();
-  /*
-  int minval = 900;
-
-  for (int pin = IR_FIRST_PIN; pin < IR_LAST_PIN; pin ++)
-  {
-    int val = analogRead(pin);
-    irValue[pin] = val;
-    if (minval > val) {
-      minval = val;
-    }
-  }
-
-  if (minval > NOT_BALL_FOUND){
-    ballFound = false;
-  }else{
-    ballFound = true;
-  }
-
-  float vx = 0.0,vy = 0.0;
-
-  for (int pin = IR_FIRST_PIN; pin < IR_LAST_PIN; pin ++)
-  {
-    if(pin == 5 || pin == 6){
-      continue;
-    }
-    float w = 1.0 / (irValue[pin] + 1);
-    float ang = deg_radian(pin - IR_FIRST_PIN);
-    vx += w * cos(ang);
-    vy += w * sin(ang);
-  }
-
-  theta = atan2(vy,vx) * 180.0 / M_PI;
-  if (theta < 0.0) theta += 360.0;
-
-  float ballAngle = (theta / 360) * 1024; // C-styleに送る用
-
-  Serial.println(theta);
-
-  if(ballFound) {
     analogWrite(DAC_PIN, ballAngle); // DAC_PINに値を送る。
-  }else{
-    Serial.println("ボールが見つかりません笑");
+  }
+  else
+  {
+    Serial.print("ボールが見つかりません笑");
   }
 
-  */
+  Serial.println();
 
   delay(100);
 }
