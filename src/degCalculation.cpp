@@ -9,7 +9,7 @@ static const int NOT_BALL_FOUND = 900;
 bool ballFound = false;
 float theta = 0.0;
 
-class IR
+class IR // 個々のIRもろもろ
 {
 public:
     int pin = -1;
@@ -20,19 +20,17 @@ IR myIR[8];
 
 const int IRsensor_pin[8] = {1, 2, 3, 4, 5, 8, 9, 10};
 
-class Memory
-{
-public:
-    int value;
-};
-Memory Pin[8];
+// 移動平均クラス新ファミリーの宣言
+static MovingAverage vxMA;
+static MovingAverage vyMA;
+static MovingAverage degMA;
 
 float ballAngle;
 const int DAC_PIN = A0;
 
-static float deg_radian(int index)
+static float deg_radian(float degree)
 {
-    return index * M_PI / 180.0;
+    return degree * M_PI / 180.0;
 }
 
 void DegCalculation()
@@ -80,7 +78,7 @@ void DegCalculation()
 
     //
     //=======================================================================================
-    //ベクトル合成
+    // ベクトル合成
     //=======================================================================================
     //
 
@@ -94,18 +92,18 @@ void DegCalculation()
         vy += w * sin(ang);
     }
 
-    
+    float smoothVX = vxMA.update(vx);
+    float smoothVY = vyMA.update(vy);
 
-    theta = atan2(vy, vx) * 180.0 / M_PI;
+    theta = atan2(smoothVY, smoothVX) * 180.0 / M_PI;
     if (theta < 0.0)
         theta += 360.0;
-
 
     ballAngle = (theta / 360.0) * 1024; // C-styleに送る用
 
     if (ballFound)
     {
-        Serial.print(theta);
+        Serial.print(ballAngle);
         analogWrite(DAC_PIN, ballAngle); // DAC_PINに値を送る。
     }
     else
