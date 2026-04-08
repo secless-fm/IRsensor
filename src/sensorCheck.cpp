@@ -3,7 +3,7 @@
 
 const int IR_FIRST_PIN = 1;
 const int IR_LAST_PIN = 10;
-const int IR_COUNT = 11;
+const int IR_COUNT = 8;
 
 void SensorCheck(){
     for (int pin = IR_FIRST_PIN; pin <= IR_LAST_PIN; pin++) // センサごとの値チェックプログラム

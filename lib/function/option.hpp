@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
-float _normalizeAngle(float angle); //角度を 0°~360° → -180°~180° に変換
+float NormalizeAngle(float angle); //角度を 0°~360° → -180°~180° に変換
 
 void Serial_start(); // シリアル起動確認
+
+float MovingAverage(int now_val); // 移動平均を出す

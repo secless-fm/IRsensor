@@ -7,8 +7,6 @@
 
 #define ValueCheck 0 // 1: センサの値チェック 0: 角度を出す コメントアウト:3つ目の処理（未実装）
 
-const int DAC_PIN = A0;
-
 
 void setup()
 {
@@ -30,15 +28,6 @@ void loop()
   #else
 
   #endif
-
-  if (ballFound)
-  {
-    analogWrite(DAC_PIN, ballAngle); // DAC_PINに値を送る。
-  }
-  else
-  {
-    Serial.print("ボールが見つかりません笑");
-  }
 
   Serial.println();
 

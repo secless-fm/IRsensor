@@ -1,41 +1,75 @@
 #include <Arduino.h>
+#include "option.hpp"
+
 #include "sensorCheck.hpp"
 #include "degCalculation.hpp"
 
 static const int NOT_BALL_FOUND = 900;
 
-static int irValue[11];
 bool ballFound = false;
-static float theta = 0.0;
+float theta = 0.0;
+
+class IR
+{
+public:
+    int pin = -1;
+    int val = -1;
+    float deg = -1;
+};
+IR myIR[8];
+
+const int IRsensor_pin[8] = {1, 2, 3, 4, 5, 8, 9, 10};
+
+class Memory
+{
+public:
+    int value;
+};
+Memory Pin[8];
 
 float ballAngle;
+const int DAC_PIN = A0;
 
 static float deg_radian(int index)
 {
-    static const double Deg[] = {
-    0.0, 45.0, 90.0, 135.0, 0.0, 0.0,   // 6,7番目は無意味
-    180.0, 225.0, 270.0, 315.0};
-    return Deg[index] * M_PI / 180.0;
+    return index * M_PI / 180.0;
 }
 
-void DegCalculation(){
-    int minval = 900;
+void DegCalculation()
+{
+    //
+    //=======================================================================================
+    // 値の更新
+    //=======================================================================================
+    //
+    IR minIR; // 最小値の決定
+    minIR.val = 1023;
 
-    for (int pin = IR_FIRST_PIN; pin <= IR_LAST_PIN; pin++)
+    for (int i = 0; i < 8; i++)
     {
-        if (pin == 6 || pin == 7)
+        myIR[i].pin = IRsensor_pin[i];
+        myIR[i].val = analogRead(myIR[i].pin);
+        myIR[i].deg = i * 45;
+
+        if (myIR[i].val < minIR.val)
         {
-            continue;
-        }
-        int val = analogRead(pin);
-        irValue[pin] = val;
-        if (minval > val)
-        {
-        minval = val;
+            minIR.pin = myIR[i].pin;
+            minIR.val = myIR[i].val;
+            minIR.deg = myIR[i].deg;
         }
     }
 
-    if (minval > NOT_BALL_FOUND)
+    for (int i = 0; i < IR_COUNT; i++)
+    {
+        Serial.print(myIR[i].val);
+        Serial.print(" ");
+    }
+    Serial.print("-> ");
+    Serial.print(minIR.val);
+    Serial.print(" ");
+
+    // -minval900よりも小さいならballFoundがtrueにする-
+    if (minIR.val > NOT_BALL_FOUND)
     {
         ballFound = false;
     }
@@ -44,25 +78,38 @@ void DegCalculation(){
         ballFound = true;
     }
 
+    //
+    //=======================================================================================
+    //ベクトル合成
+    //=======================================================================================
+    //
+
     float vx = 0.0, vy = 0.0;
 
-    for (int pin = IR_FIRST_PIN; pin <= IR_LAST_PIN; pin++)
+    for (int pin = 0; pin < IR_COUNT; pin++)
     {
-        if (pin == 6 || pin == 7)
-        {
-            continue;
-        }
-        float w = 1.0 / (irValue[pin] + 1);
-        float ang = deg_radian(pin);
+        float w = 1.0 / (myIR[pin].val + 1);
+        float ang = deg_radian(myIR[pin].deg);
         vx += w * cos(ang);
         vy += w * sin(ang);
     }
 
+    
+
     theta = atan2(vy, vx) * 180.0 / M_PI;
     if (theta < 0.0)
-    theta += 360.0;
+        theta += 360.0;
 
-    ballAngle = (theta / 360) * 1024;   // C-styleに送る用
 
-    Serial.print(theta);
+    ballAngle = (theta / 360.0) * 1024; // C-styleに送る用
+
+    if (ballFound)
+    {
+        Serial.print(theta);
+        analogWrite(DAC_PIN, ballAngle); // DAC_PINに値を送る。
+    }
+    else
+    {
+        Serial.print("ボールが見つかりません笑");
+    }
 }
