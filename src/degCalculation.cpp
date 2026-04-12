@@ -16,6 +16,7 @@ public:
     int val = -1;
     float deg = -1;
 };
+
 IR myIR[8];
 
 const int IRsensor_pin[8] = {1, 2, 3, 4, 5, 8, 9, 10};
@@ -23,7 +24,6 @@ const int IRsensor_pin[8] = {1, 2, 3, 4, 5, 8, 9, 10};
 // 移動平均クラス新ファミリーの宣言
 static MovingAverage vxMA;
 static MovingAverage vyMA;
-static MovingAverage degMA;
 
 float ballAngle;
 const int DAC_PIN = A0;
@@ -103,7 +103,7 @@ void DegCalculation()
 
     if (ballFound)
     {
-        Serial.print(ballAngle);
+        Serial.print(theta);
         analogWrite(DAC_PIN, ballAngle); // DAC_PINに値を送る。
     }
     else

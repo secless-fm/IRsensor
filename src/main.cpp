@@ -5,8 +5,7 @@
 #include "sensorCheck.hpp"
 #include "degCalculation.hpp"
 
-#define ValueCheck 0 // 1: センサの値チェック 0: 角度を出す コメントアウト:3つ目の処理（未実装）
-
+#define IRValueCheck 0 // 1: センサの値チェック 0: 角度を出す コメントアウト:実行しない
 
 void setup()
 {
@@ -17,16 +16,12 @@ void setup()
 
 void loop()
 {
-#ifdef ValueCheck
-
-  #if ValueCheck
+  #ifdef IRValueCheck // ====IRセンサ=========================================
+  #if IRValueCheck
   SensorCheck();
   #else
   DegCalculation();
   #endif
-
-  #else
-
   #endif
 
   Serial.println();
