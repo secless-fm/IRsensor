@@ -7,6 +7,7 @@
 
 #define IRValueCheck 0 // 1: センサの値チェック 0: 角度を出す コメントアウト:実行しない
 
+
 void setup()
 {
   Serial.begin(115200);
